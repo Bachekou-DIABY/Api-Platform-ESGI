@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Page1{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+    </head>
+    <body>
+    {% for company in companies %}
+        <ul>
+            <li>Raison Sociale : {{ company.raisonSociale }}</li>
+            <li>Siren : {{ company.siren }}</li>
+            <li>Siret : {{ company.siret }}</li>
+            <li>Adresse : {{ company.adresse }}</li>
+            <li>
+            <form action="{{ path('saveResults') }}" method="post">
+                <input type="hidden" name="raisonSociale" value="{{ company.raisonSociale }}">
+                <input type="hidden" name="siren" value="{{ company.siren }}">
+                <input type="hidden" name="siret" value="{{ company.siret }}">
+                <input type="hidden" name="adresse" value="{{ company.adresse }}">
+                <button type="submit">Sauvegarder</button>
+            </form>
+            </li>
+            <hr>
+        </ul>
+
+    {% endfor %}
+    </body>
+</html>
+

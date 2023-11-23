@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Page1{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}
+            <h1> Voici vos estimations de salaire avec le salaire brut que vous nous avez indiqué : {{ Brut }} € </h1>
+            <h2> 1.CDI </h2>
+            
+            <p> Voici le cout employeur pour un salarié en CDI : {{ CDI_cout_employeur }}</p>
+            <p> Voici les cotisations pour un salarié en CDI : {{ CDI_cotisations }}</p>
+            <p> Voici le salaire net pour un salarié en CDI : {{ CDI_salaire_net }}</p>
+
+            <h2> 2.Stage </h2>
+
+            <p> Voici la gratification minimale pour un stage dans cette entreprise : {{ salaireStage }}</p>
+
+            <h2> 3.Alternancec </h2>
+            
+            <p> Voici le cout employeur pour un salarié en contrat d'alternance : {{ Alt_cout_employeur }}</p>
+            <p> Voici les cotisations pour un salarié en contrat d'alternance : {{ Alt_cotisations }}</p>
+            <p> Voici le salaire net pour un salarié en contrat d'alternance : {{ Alt_salaire_net }}</p>
+            
+            <h2> 4.CDD </h2>
+            
+            <p> Voici le cout employeur pour un salarié en CDD : {{ CDD_cout_employeur }}</p>
+            <p> Voici les cotisations pour un salarié en CDD : {{ CDD_cotisations }}</p>
+            <p> Voici le salaire net pour un salarié en CDD : {{ CDD_salaire_net }}</p>
+            <p> Voici les indémnités de départ pour un salarié en CDD : {{ CDD_indemnités }}</p>
+
+        {% endblock %}
+    </body>
+</html>
