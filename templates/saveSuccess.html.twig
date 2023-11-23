@@ -12,11 +12,12 @@
     </head>
     <body>
         {% block body %}
-            <h1> Fichier sauvegardé avec succès</h1>
-            <p> {{ raisonSociale }} </p>
-            <p> {{ siren }} </p>
-            <p> {{ siret }} </p>
-            <p> {{ adresse }} </p>
+            <h1> Entreprise sauvegardée dans le fichier avec succès</h1>
+            <h3> Vous pouvez y acceder a l'adresse suivante : http://127.0.0.1:8000/getCompany/{{ siren }} </h3>
+            <p> Raison Sociale : {{ raisonSociale }} </p>
+            <p> Siren : {{ siren }} </p>
+            <p> Siret : {{ siret }} </p>
+            <p> Adresse : {{ adresse }} </p>
         {% endblock %}
     </body>
 </html>
