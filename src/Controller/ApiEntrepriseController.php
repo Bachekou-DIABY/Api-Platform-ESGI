@@ -17,12 +17,12 @@ class ApiEntrepriseController extends AbstractController
     #[Route('/getAllCompanies', name: 'getCompanyList')]
     public function getAllCompanies(Request $request)
     {
-        // Vérifier si le verbe HTTP utilisé est GET
+        //Je vérifie si le verbe HTTP utilisé est GET
         if (!$request->isMethod('GET')) {
             return new Response('Méthode non autorisée : Seul une requête avec la méthode GET est possible pour cette route', Response::HTTP_METHOD_NOT_ALLOWED);
         }
 
-        //On récupère la valeur du paramètre "format" de la requête et on assigne 'json' par défaut si le paramètre n'est pas indiqué
+        //Je récupère la valeur du paramètre "format" de la requête et j'assigne 'json' par défaut si le paramètre n'est pas indiqué
         $format = $request->query->get('format', 'json');
         if ($format != 'json' && $format != 'csv') {
             return new Response('Format non pris en compte : Seul les formats "json" et "csv" sont autorisés', Response::HTTP_NOT_ACCEPTABLE);
@@ -30,12 +30,12 @@ class ApiEntrepriseController extends AbstractController
 
         $companies = $this->getcompanies();
 
-        // Vérifier si aucune entreprise n'est enregistrée
+        // Je vérifie si aucune entreprise n'est enregistrée
         if (empty($companies)) {
             return new Response('Aucune entreprise enregistrée', Response::HTTP_OK);
         }
 
-        // Récupérer le format demandé depuis le paramètre de requête "format"
+        // Récupéreration du format demandé depuis le paramètre de requête "format"
         if ($format == 'json' || $format == 'html') {
             return $this->json($companies, Response::HTTP_OK);
         } else if ($format == 'csv') {
@@ -50,46 +50,45 @@ class ApiEntrepriseController extends AbstractController
     #[Route('/getCompany/{siren}', name: 'getCompany')]
     public function getCompanyBySiren(Request $request, $siren)
     {
-        // Vérifier si le verbe HTTP utilisé est GET
+        // Je Vérifie si le verbe HTTP utilisé est GET
         if (!$request->isMethod('GET')) {
             return new Response('Méthode non autorisée : Seul une requête avec la méthode GET est possible pour cette route', Response::HTTP_METHOD_NOT_ALLOWED);
         }
 
-        // Récupérer les entreprises depuis le fichier ou autre source
+        // Récupéreration des entreprises depuis le fichier
         $companies = $this->getcompanies();
 
-        // Rechercher l'entreprise par siren
+        // Recherche de l'entreprise par siren
         $company = $this->findEntrepriseBySiren($companies, $siren);
-        // Vérifier si aucune entreprise n'a été trouvée
+        // Gestion du cas ou aucune entreprise n'a été trouvée
         if (!$company) {
             return new Response('Aucune entreprise avec ce SIREN n\'à été retrouvée', Response::HTTP_NOT_FOUND);
         }
-
-        // Répondre avec un statut 201 Created
+        // Réponse avec un statut 201 Created si l'entreprise a bien été crée
         return $this->json($company, Response::HTTP_OK);
     }
 
     #[Route('/create', name: 'createCompany')]
     public function createCompany(Request $request)
     {
-        // Vérifier si le verbe HTTP utilisé est POST
+        // Je Vérifie si le verbe HTTP utilisé est POST
         if (!$request->isMethod('POST')) {
             return new Response('Méthode non autorisée : Seul une requête avec la méthode POST est possible pour cette route', Response::HTTP_METHOD_NOT_ALLOWED);
         }
 
-        // Récupérer le contenu JSON de la requête
+        // Récupéreration du contenu JSON de la requête
         $data = $request->getContent();
 
-        // Désérialiser le JSON en un tableau associatif
+        // Mise en forme des données
         $decodedData = json_decode($data, true);
 
-        // Valider les données JSON
+        // Validation des données
         $validation = $this->validateJson($decodedData);
         if ($validation->getStatusCode() == Response::HTTP_BAD_REQUEST) {
             return new Response('Le formulaire transmis au format JSON est manquant ou incomplet', Response::HTTP_BAD_REQUEST);
         }
 
-        // Créer l'entreprise avec les données fournies
+        // Création de l'entreprise avec les données fournies
         $num = $decodedData['adresse']['Num'];
         $voie = $decodedData['adresse']['Voie'];
         $codePostal = $decodedData['adresse']['Code_postal'];
@@ -104,16 +103,16 @@ class ApiEntrepriseController extends AbstractController
             'siret' => $decodedData['siret'],
             'adresse' => $adresse
         ];
-        // Ajouter l'entreprise au fichier ou à la source de données
+        // Ajout de l'entreprise au fichier 
         $result = $this->addCompany($company);
 
-        // Utiliser le code de statut HTTP et le message dans la réponse
+        // Message de retour avec le code de statut HTTP 
         $response = new Response($result['message'], $result['status_code']);
         $response->headers->set('Content-Type', 'text/plain');
 
-        // Vérifier le statut de la réponse
+        // Vérifivation du statut de la réponse
         if ($result['status_code'] === Response::HTTP_CREATED) {
-            // Si la création réussit, renvoyer le template de succès
+            // Si la création réussit, je renvoies le template de succès
             return $this->render('saveSuccess.html.twig', [
                 'raisonSociale' => $company['raisonSociale'],
                 'siren' => $company['siren'],
@@ -121,7 +120,7 @@ class ApiEntrepriseController extends AbstractController
                 'adresse' => $adresse,
             ], new Response(null, Response::HTTP_CREATED));
         } else {
-            // Si la création échoue, renvoyer le template d'échec avec le bon code de statut
+            // Si la création échoue, je renvoies le template d'échec avec le bon code de statut
             return $this->render('saveFailed.html.twig', ['message' => $result['message']], new Response(null, Response::HTTP_CONFLICT));
         }
     }
@@ -129,10 +128,11 @@ class ApiEntrepriseController extends AbstractController
     #[Route('/patch/{siren}', name: 'patchCompany')]
     public function patchCompany(Request $request, $siren)
     {
+        // Je Vérifie si le verbe HTTP utilisé est PATCH
         if (!$request->isMethod('PATCH')) {
             return new Response('Méthode non autorisée : Seul une requête avec la méthode PATCH est possible pour cette route', Response::HTTP_METHOD_NOT_ALLOWED);
         }
-
+        // Récupéaration des informations d'identification
         $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
 
         if (strpos($authorizationHeader, 'Basic') === 0) {
@@ -140,14 +140,15 @@ class ApiEntrepriseController extends AbstractController
             $credentials = base64_decode($base64Credentials);
             list($enteredUsername, $enteredPassword) = explode(':', $credentials);
 
-            // Vérifiez les informations d'identification
+            // Vérification des informations d'identification
             if ($enteredUsername === $this->username && $enteredPassword === $this->password) {
+                // Validation des données
                 $data = json_decode($request->getContent(), true);
                 $validation = $this->validateJsonPatch($data);
                 if ($validation->getStatusCode() == Response::HTTP_BAD_REQUEST) {
                     return new Response('Le formulaire transmis au format JSON est manquant ou incomplet', Response::HTTP_BAD_REQUEST);
                 }
-
+                // Mise en forme des données
                 $num = $data['adresse']['Num'] ?? null;
                 $voie = $data['adresse']['Voie'] ?? null;
                 $codePostal = $data['adresse']['Code_postal'] ?? null;
@@ -159,6 +160,7 @@ class ApiEntrepriseController extends AbstractController
                     return new Response('Le contenu de la requête JSON est invalide ou manquant', Response::HTTP_BAD_REQUEST);
                 } else {
                     $companies = $this->getcompanies();
+                    // Récupération de l'entreprise voulue dans le
                     $company = $this->findEntrepriseBySiren($companies, $siren);
 
                     if ($company === null) {
@@ -171,9 +173,9 @@ class ApiEntrepriseController extends AbstractController
                         $companies = $this->getcompanies();
                         $company = $this->findEntrepriseBySiren($companies, $siren);
 
-                        // Vérifier le statut de la réponse
+                        // Vérification du statut de la réponse
                         if ($result['status_code'] === Response::HTTP_OK) {
-                            // Si la création réussit, renvoyer le template de succès
+                            // Si la création réussit, je renvoies le template de succès
                             return $this->render('saveSuccess.html.twig', [
                                 'raisonSociale' => $company['raisonSociale'] ?? null,
                                 'siren' => $company['siren'] ?? null,
@@ -181,7 +183,7 @@ class ApiEntrepriseController extends AbstractController
                                 'adresse' => $adresse ?? null,
                             ], new Response(null, Response::HTTP_OK));
                         } else {
-                            // Si la création échoue, renvoyer le template d'échec avec le bon code de statut
+                            // Si la création échoue, je renvoies le template d'échec avec le bon code de statut
                             return $this->render('saveFailed.html.twig', ['message' => $result['message']], new Response(null, Response::HTTP_NOT_FOUND));
                         }
                     }
@@ -201,11 +203,11 @@ class ApiEntrepriseController extends AbstractController
     #[Route('/delete/{siren}', name: 'deleteCompany')]
     public function deleteCompany(Request $request, $siren)
     {
-        // Vérifier si le verbe HTTP utilisé est DELETE
+        // Je vérifies si le verbe HTTP utilisé est DELETE
         if (!$request->isMethod('DELETE')) {
             return new Response('Méthode non autorisée : Seul une requête avec la méthode DELETE est possible pour cette route', Response::HTTP_METHOD_NOT_ALLOWED);
         }
-        // Vérifier l'authentification (implémenter votre propre logique d'authentification ici)
+        // Récupéaration des informations d'identification
         $authorizationHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
 
         if (strpos($authorizationHeader, 'Basic') === 0) {
@@ -213,9 +215,9 @@ class ApiEntrepriseController extends AbstractController
             $credentials = base64_decode($base64Credentials);
             list($enteredUsername, $enteredPassword) = explode(':', $credentials);
 
-            // Vérifiez les informations d'identification
+            // Vérification des informations d'identification
             if ($enteredUsername === $this->username && $enteredPassword === $this->password) {
-                // Supprimer l'entreprise et son fichier
+                // Suppression de l'entreprise dans le fichier
                 $result = $this->deleteCompanyBySiren($siren);
             }else{
                 // Les informations d'identification sont incorrectes
@@ -224,7 +226,7 @@ class ApiEntrepriseController extends AbstractController
     
             }
 
-            // Retourner la réponse JSON en fonction du résultat
+            // Retour de la requete avec la réponse JSON en fonction du résultat
             if ($result['status_code'] == Response::HTTP_OK) {
                 return new Response($result['message'], $result['status_code']);
             } else {
@@ -240,17 +242,19 @@ class ApiEntrepriseController extends AbstractController
 
     private function findEntrepriseBySiren(array $companies, $siren)
     {
+        //Parcours la liste des entreprises et retourne l'entreprise avec le siren voulu
         foreach ($companies as $company) {
             if ($company['siren'] === $siren) {
                 return $company;
             }
         }
-
+        // l'entreprise n'à pas été retrouvée
         return null;
     }
 
     private function getcompanies()
     {
+        //Parcours du fichier et mise en forme des données dans un tableau
         $filePath = $this->getParameter('kernel.project_dir') . '/src/Database/companies.txt';
         $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $companies = [];
@@ -270,6 +274,7 @@ class ApiEntrepriseController extends AbstractController
 
     private function generateCSV(array $companies)
     {
+        //generation du csv : une ligne par entreprise
         $csvData = "Raison Sociale,Siret,Siren,adresse\n";
         foreach ($companies as $company) {
             $csvData .=
@@ -283,6 +288,7 @@ class ApiEntrepriseController extends AbstractController
 
     public function validateJson($decodedData)
     {
+        //On vérifie que le corps de la requête n'est pas vide et qu'il contient les paramètres voulus
         if (
             !$decodedData ||
             !isset($decodedData['siren']) ||
@@ -298,6 +304,7 @@ class ApiEntrepriseController extends AbstractController
         ) {
             return new Response('Le formulaire transmis au format JSON est manquant ou incomplet', Response::HTTP_BAD_REQUEST);
         } else {
+            //Puis on vérifie si les paramètres sont des chaines de caractères
             foreach ($decodedData as $key => $value) {
                 if ($key !== 'adresse' && gettype($value) !== 'string') {
                     return new Response("Le paramètre \"$key\" doit être une chaine de caractères", Response::HTTP_BAD_REQUEST);
@@ -319,9 +326,11 @@ class ApiEntrepriseController extends AbstractController
 
     public function validateJsonPatch($decodedData)
     {
+        //On vérifie que le corps de la requête n'est pas vide et qu'il contient les paramètres voulus
         if (!$decodedData) {
             return new Response('Le formulaire transmis au format JSON est manquant ou incomplet', Response::HTTP_BAD_REQUEST);
         } else {
+            //Puis on vérifie si les paramètres sont des chaines de caractères
             foreach ($decodedData as $key => $value) {
                 if ($key !== 'adresse' && gettype($value) !== 'string') {
                     return new Response("Le paramètre \"$key\" doit être une chaine de caractères", Response::HTTP_BAD_REQUEST);
@@ -347,13 +356,17 @@ class ApiEntrepriseController extends AbstractController
 
     private function addCompany(array $company)
     {
+        //Récupération des champs contenus dans l'entreprise passée en paramètre
         $raisonSociale = $company['raisonSociale'];
         $siren = $company['siren'];
         $siret = $company['siret'];
         $adresse = $company['adresse'];
+        //Récupération du contenu du fichier
         $file = '../src/Database/companies.txt';
         $current = file_get_contents($file);
+        //Je m'assure que le fichier ne soit pas vide
         if (!empty($current)) {
+            //je parcours chaque entreprise et je vérifie si une entreprise avec le siren voulu existe déja dans le fichier
             $existingCompanies = explode("\n", $current);
             foreach ($existingCompanies as $existingCompany) {
                 $existingCompanyData = explode(',', $existingCompany);
@@ -365,6 +378,7 @@ class ApiEntrepriseController extends AbstractController
                 }
             }
         }
+        //je mets en forme les données avant de les réecrire dans le fichier
         $company = "$raisonSociale,$siren,$siret,$adresse";
         $current .= $company;
         $current .= "\n";
@@ -377,6 +391,8 @@ class ApiEntrepriseController extends AbstractController
 
     private function modifyCompany(array $company)
     {
+        //Récupération du champ siren contenu dans l'entreprise passée en paramètre
+
         $siren = $company['siren'];
         $file = '../src/Database/companies.txt';
         $current = file_get_contents($file);
@@ -421,7 +437,6 @@ class ApiEntrepriseController extends AbstractController
         ];
     }
 
-    // Fonction pour supprimer l'entreprise par SIREN
     private function deleteCompanyBySiren($siren)
     {
         $file = '../src/Database/companies.txt';
@@ -436,7 +451,7 @@ class ApiEntrepriseController extends AbstractController
             foreach ($existingCompanies as $existingCompany) {
                 $existingCompanyData = explode(',', $existingCompany);
                 if (isset($existingCompanyData[1]) && $existingCompanyData[1] === $siren) {
-                    // Entreprise trouvée, ne pas l'ajouter à la liste mise à jour
+                    // Entreprise trouvée : ne pas l'ajouter à la liste mise à jour
                     $companyFound = true;
                 } else {
                     $updatedCompanies[] = $existingCompany;
@@ -444,7 +459,7 @@ class ApiEntrepriseController extends AbstractController
             }
     
             if ($companyFound) {
-                // Mettre à jour le fichier avec les entreprises restantes
+                // Mise à jour du fichier avec les entreprises restantes
                 file_put_contents($file, implode("\n", $updatedCompanies));
                 return [
                     'status_code' => Response::HTTP_OK,
@@ -466,6 +481,7 @@ class ApiEntrepriseController extends AbstractController
 
     function flattenArray($array)
     {
+        //Permet de reconstruire la chaine de caractère adresse qui peut etre un tableau contenant un tableau dans le json
         $result = [];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
