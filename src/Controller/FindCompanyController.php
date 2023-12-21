@@ -12,7 +12,7 @@ use App\Form\CompanyFormType;
 
 class FindCompanyController extends AbstractController
 {
-
+    
     public function __construct(
         private HttpClientInterface $client,
         private RequestStack $requestStack,
