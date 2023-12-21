@@ -6,7 +6,6 @@ on:
 jobs:
   livraison_continue:
     runs-on: ubuntu-22.04
-
     steps:
     - name: Checkout to current repository 
       uses: actions/checkout@v3
