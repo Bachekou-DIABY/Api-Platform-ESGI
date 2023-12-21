@@ -12,8 +12,6 @@ jobs:
     steps:
     - name: Checkout to current repository 
       uses: actions/checkout@v3
-      - run: npm install
-      - run: npm run lint
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
