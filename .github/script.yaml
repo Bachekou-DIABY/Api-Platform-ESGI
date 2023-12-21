@@ -8,9 +8,17 @@ on:
 jobs:
   livraison_continue:
     runs-on: ubuntu-22.04
-    env:
-      IMAGE_NAME: "mynode:19"
+
     steps:
+    - name: Checkout to current repository 
       uses: actions/checkout@v3
       - run: npm install
       - run: npm run lint
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+    - name: Install dependencies
+      run: composer install
+    - name: Run lint
+      run: vendor/bin/phpcbf --standard=PSR2 ./src

@@ -8,9 +8,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Request;
-use App\Form\saveCompanyFormType;
+use App\Form\SaveCompanyFormType;
 
-class showCompanyController extends AbstractController
+class ShowCompanyController extends AbstractController
 {
 
     public function __construct(
@@ -42,7 +42,6 @@ class showCompanyController extends AbstractController
         $file = '../src/Database/companies.txt';
         $current = file_get_contents($file);
         if (!empty($current)) {
-
             $existingCompanies = explode("\n", $current);
 
             foreach ($existingCompanies as $existingCompany) {
