@@ -11,4 +11,3 @@
 ###> phpunit/phpunit ###
 .phpunit.result.cache
 ###< phpunit/phpunit ###
-.env
