@@ -6,6 +6,8 @@ on:
   push:
     branches:
     - main
+    tags:
+      - "*"
 jobs:
   livraison_continue:
     runs-on: ubuntu-22.04
@@ -22,9 +24,9 @@ jobs:
       run: vendor/bin/phpcbf --standard=PSR2 ./src
     - name: Execute tests
       run: vendor/bin/phpunit
-  docker_build_push:
+  deploy:
     runs-on: ubuntu-22.04
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && startsWith(github.event.after, 'refs/tags/'))
     steps:
     - name: Checkout to current repository 
       uses: actions/checkout@v3
