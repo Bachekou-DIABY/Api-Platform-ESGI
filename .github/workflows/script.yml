@@ -46,4 +46,4 @@ jobs:
       with:
         push: true
         context: ./
-        tags: "moshtek/CI:${{ env.TAG_NAME }}"
+        tags: "moshtek/ci_cd:${{ env.TAG_NAME }}"
