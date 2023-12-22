@@ -27,6 +27,7 @@ jobs:
   deploy:
     runs-on: ubuntu-22.04
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && startsWith(github.event.after, 'refs/tags/'))
+    needs: livraison_continue
     steps:
     - name: Checkout to current repository 
       uses: actions/checkout@v3
