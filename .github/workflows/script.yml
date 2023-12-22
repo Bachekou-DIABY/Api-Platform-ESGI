@@ -17,4 +17,5 @@ jobs:
       run: composer install
     - name: Execute lint
       run: vendor/bin/phpcbf --standard=PSR2 ./src
-      
+    - name: Execute tests
+      run: vendor/bin/phpunit
