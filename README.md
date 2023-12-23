@@ -40,6 +40,7 @@ Ainsi, la branche main ne peut contenir que des commit de merge depuis les autre
 Un script de CI est éxécuté à chaque pull request. Son rôle est de:
 - Réaliser un lint du code et verifier qu'il est aux normes syntaxiques de PHP
 - Réaliser les tests unitaires avec PHPUnit afin de vérifier que les fonctions marchent bien individuellement
+- Réaliser le build de l'image docker afin de le déployer plus tard sur DockerHub
 
 Si le lint ou les tests echouent, la PR est bloquée
 Sinon la PR est autorisée à être mergée
@@ -48,3 +49,9 @@ Sinon la PR est autorisée à être mergée
 
 Si la PR passe et que la branche est mergée sur main, on réexecute le script de CI précédent et si le script ne présente pas d'echec, 
 une image docker est build, je me connecte a DockerHub puis je deploie l'image générée sur DockerHub avec le tag "latest"
+
+## Livraison Continue
+
+Dans le cas ou un tag serait crée directement depuis le depôt git, le script réalisant le processus de livraison continue et de déploiement continu est éxecuté et une image Docker est générée et publiée sur DockerHub mais cette fois ci avec le même tag que le tag crée sur git.
+
+Le projet contient bien un DockerHub mais je n'ai pas pu effectuer la vérification avec hadolint car je n'ai pas réussi a installer de version compatible via composer 
