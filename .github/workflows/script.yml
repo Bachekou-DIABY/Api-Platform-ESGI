@@ -48,8 +48,8 @@ jobs:
       run: docker pull moshtek/ci_cd:latest
     - name: Push Docker image
       run: |
-        if [ "${RELEASE_TAG}" == "true" && "${{env.TAG_NAME}}" != null]; then
-          docker tag moshtek/ci_cd:latest moshtek/ci_cd:${{ env.TAG_NAME }}
+        if [ "${RELEASE_TAG}" == "true" ] && [[ "${{ env.TAG_NAME }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        docker tag moshtek/ci_cd:latest moshtek/ci_cd:${{ env.TAG_NAME }}
           docker push moshtek/ci_cd:${{ env.TAG_NAME }}
         else
           docker push moshtek/ci_cd:latest
