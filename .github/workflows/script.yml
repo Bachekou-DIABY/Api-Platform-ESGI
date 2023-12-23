@@ -49,9 +49,8 @@ jobs:
     - name: Push Docker image
       run: |
         if [ "${RELEASE_TAG}" == "true" ] && [[ "${{ env.TAG_NAME }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        docker image tag moshtek/ci_cd:latest moshtek/ci_cd:${{ env.TAG_NAME }}
-          docker push moshtek/ci_cd:${{ env.TAG_NAME }}
-        else
           docker image tag moshtek/ci_cd:latest moshtek/ci_cd:${{ env.TAG_NAME }}
           docker push moshtek/ci_cd:${{ env.TAG_NAME }}
+        else
+          docker push moshtek/ci_cd:latest
         fi
