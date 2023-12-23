@@ -42,12 +42,12 @@ Un script de CI est éxécuté à chaque pull request. Son rôle est de:
 - Réaliser les tests unitaires avec PHPUnit afin de vérifier que les fonctions marchent bien individuellement
 - Réaliser le build de l'image docker afin de le déployer plus tard sur DockerHub
 
-Si le lint ou les tests echouent, la PR est bloquée
-Sinon la PR est autorisée à être mergée
+Si le lint ou les tests echouent, la Pull Request est bloquée
+Sinon la Pull Requst est autorisée à être mergée
 
 ## Déploiement Continu
 
-Si la PR passe et que la branche est mergée sur main, on réexecute le script de CI précédent et si le script ne présente pas d'echec, 
+Si la Pull Request passe et que la branche est mergée sur main, on réexecute le script de CI précédent et si le script ne présente pas d'echec, 
 une image docker est build, je me connecte a DockerHub puis je deploie l'image générée sur DockerHub avec le tag "latest"
 
 ## Livraison Continue
@@ -55,3 +55,24 @@ une image docker est build, je me connecte a DockerHub puis je deploie l'image g
 Dans le cas ou un tag serait crée directement depuis le depôt git, le script réalisant le processus de livraison continue et de déploiement continu est éxecuté et une image Docker est générée et publiée sur DockerHub mais cette fois ci avec le même tag que le tag crée sur git.
 
 Le projet contient bien un DockerHub mais je n'ai pas pu effectuer la vérification avec hadolint car je n'ai pas réussi a installer de version compatible via composer 
+
+## Commandes à éxecuter pour reproduire manuellement les étapes de la CI
+
+Dans le cas ou un utilisateur souhaiterais reproduire les commandes executées lors de la CI, il faudrait :
+- cloner le projet en recupérant l'url du projet et en executant la commande : "git clone {url du depot} {nom souhaité}
+- Se placer dans le repository cloné et executer la commande composer install 
+- Executer la commande "vendor/bin/phpcbf --standard=PSR2 ./src" afin d'effectuer le lint des fichiers php du projet
+- Executer la commande "vendor/bin/phpunit" pour effectuer les quelques tests unitaires mis en place
+- Pour réaliser le build de l'image, il faudra se placer dans un terminal ou docker tourne et executer la commande "docker build -t {nom_de_l'image}"
+
+## Marche à suivre pour deployer une image
+
+Pour déployer une image en suivant les étapes voulues par le script de CI et de CD rédigés, il faut :
+
+- Se placer sur une branche différente de la branche main (il n'est normalement pas possible de push directement sur la branche main sauf pour l'owner du repository)
+- Rédiger son code puis push les différents commit réalisés sur la branche courante
+- Ouvrir une Pull Request depuis github
+- Le script de CI va alors faire les vérifications nécessaires
+- Si la CI passe, le code doit être mergé manuellement et obligatoirement par un autre développeur que celui qui à effectué la Pull Request
+- Une fois la branche mergée, le script de CI est executé à nouveau et si il passe, le script de déploiement est éxecuté et publie l'image sur DockerHub avec le tag latest
+- Dans le cas ou le script de Ci et de CD est lancée par le biais de la création d'un tag, au moment de deployer l'image sur DockerHub, elle sera taguée avec le meme tag que le tag crée sur git
