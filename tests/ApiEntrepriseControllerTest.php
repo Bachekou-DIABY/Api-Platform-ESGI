@@ -27,7 +27,7 @@ class ApiEntrepriseControllerTest extends WebTestCase
         $client = static::createClient();
 
         // Test if another method than GET is used and if it returns a Method Not Allowed
-        $client->request('GET', '/getAllCompanies', ['format' => 'json', 'testFilePath' => $testFilePath]);
+        $client->request('POST', '/getAllCompanies', ['format' => 'json', 'testFilePath' => $testFilePath]);
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $client->getResponse()->getStatusCode());
 
         // Test if another parameter than json or csv is used for "format" and if it returns a Not Acceptable
